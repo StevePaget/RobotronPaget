@@ -11,7 +11,9 @@ class Player():
         self.health = 100
         self.xdir = 0
         self.ydir = 0
-        self.sprite = makeSprite("smalllinks.gif",32)
+        self.sprite = makeSprite("smalllinks.gif",32) # the 32 refers to 32 individual frames
+                                                      # which are contained in thie gif file.
+                                                      # They are split into an array automatically
         showSprite(self.sprite)
         self.frame = 0
         self.timeOfNextFrame = clock()
@@ -21,18 +23,21 @@ class Player():
     def move(self):
         if clock() > self.timeOfNextFrame:  # We only animate our character every 80ms.
             self.frame = (self.frame + 1) % 8  # There are 8 frames of animation in each direction
-            self.timeOfNextFrame += 80  # so the modulus 8 allows it to loop
+                                               # so the modulus 8 allows it to loop
+            self.timeOfNextFrame += 80         #schedule the next frame 80ms from now
 
         if keyPressed("a"):
             self.xpos -= self.speed
-            changeSpriteImage(self.sprite,  2*8+self.frame)
-            self.xdir = -1
+            changeSpriteImage(self.sprite,  2*8+self.frame)  # this picks the appropriate
+                                                             # frame number from the array
+            self.xdir = -1   # this stores the horizontal direction
+                             # so any bullets we fire will go the right way
         elif keyPressed("d"):
             self.xpos += self.speed
             changeSpriteImage(self.sprite,  0*8+self.frame)
             self.xdir = 1
         else:
-            self.xdir = 0
+            self.xdir = 0   # neither A nor D have been pressed, so we are not moving horizontally
 
         if keyPressed("w"):
             self.ypos -= self.speed
@@ -49,12 +54,15 @@ class Player():
 
     def update(self):
         self.move()
-        if keyPressed("z"):
+        if keyPressed("space"):
+            print("fire")
             if clock() > self.lastBulletTime + 30:
                 # add a new bullet to the list of bullets
                 if self.xdir == 0 and self.ydir == 0:
                     self.ydir=-1
+                # the line    
                 bullets.append(Projectile(self.xpos + 20, self.ypos + 20, self.xdir * 10, self.ydir * 10, 0))
+                
                 self.lastBulletTime = clock()
 
 
